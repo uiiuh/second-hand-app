@@ -4,12 +4,13 @@
         <SearchBox></SearchBox>
         <div class="main">
             <ul class="classify-menu">
-                <li>111</li>
-                <li>111</li>
-                <li>111</li>
-                <li>111</li>
-                <li>111</li>
-                <li>111</li>
+                <li><a href="javascript:;">书籍文具</a></li>
+                <li><a href="javascript:;">数码科技</a></li>
+                <li><a href="javascript:;">家居生活</a></li>
+                <li><a href="javascript:;">美妆洗护</a></li>
+                <li><a href="javascript:;">房屋转租</a></li>
+                <li><a href="javascript:;">优惠券码</a></li>
+                <li><a href="javascript:;">其他</a></li>
             </ul>
             <div class="banner">
                 <el-carousel trigger="click">
@@ -21,7 +22,7 @@
             </div>
             <div class="user">用户信息&精灵图</div>
         </div>
-        <div>111</div>
+        <div>a</div>
         <div>222</div>
         <div>333</div>
         <div>444</div>
@@ -56,7 +57,20 @@
                 margin-right: 10px;
                 border-radius: 15px;
                 li {
-                    margin-bottom: 15px;
+                    height: 50px;
+                    border-bottom: 1px solid #E4E7ED;
+                    border-radius: 10px;
+                    transition: all .2s;
+
+                    &:hover {
+                        background-color: #E7E8FB;
+                    }
+
+                    a {
+                        display: block;
+                        color: #303133;
+                        padding: 15px;
+                    }
                 }
             }
             .banner {
