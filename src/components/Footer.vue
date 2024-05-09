@@ -1,9 +1,9 @@
 <template>
     <footer class="footer">
         <ul class="content">
-            <li>111</li>
-            <li>222</li>
-            <li>333</li>
+            <li></li>
+            <li></li>
+            <li></li>
             <li>
                 平台介绍
                 <div class="option">

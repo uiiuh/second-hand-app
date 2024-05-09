@@ -1,25 +1,36 @@
 <template>
-    <div class="search">
-        <el-input v-model="keyword" placeholder="请输入关键字" clearable>
-            <el-button slot="append" type="primary" icon="el-icon-search" class="search-button">搜索</el-button>
+    <div class="search-input">
+        <el-input v-model="keyword" placeholder="请输入关键字" clearable @input="updateKeyword">
+            <el-button slot="append" type="primary" icon="el-icon-search" class="search-button" @click="goSearch">搜索</el-button>
         </el-input>
-        <!-- <ul class="hot-search">
-            <li><a href="javascript:;">111</a></li>
-            <li><a href="javascript:;">222</a></li>
-            <li><a href="javascript:;">333</a></li>
-            <li><a href="javascript:;">444</a></li>
-            <li><a href="javascript:;">555</a></li>
-            <li><a href="javascript:;">666</a></li>
-        </ul> -->
     </div>
 </template>
 
 <script>
     export default {
         name: 'SearchBox',
+        props: ['searchKeyword'],
         data() {
             return {
-                keyword: ''
+                keyword: this.searchKeyword
+            }
+        },
+        mounted() {
+            // 这里也要触发事件
+            this.$emit('searchGoods',this.keyword)
+        },
+        methods: {
+            updateKeyword() {
+                this.$emit('updateKeyword',this.keyword)
+            },
+            goSearch() {
+                this.$emit('searchGoods',this.keyword)
+                this.$router.push({
+                    name: 'search',
+                    params: {
+                        keyword: this.keyword || undefined
+                    }
+                })
             }
         }
 
@@ -27,9 +38,8 @@
 </script>
 
 <style scoped lang="less">
-    .search {
-        margin: 0 auto;
-        margin-bottom: 10px;
+    .search-input {
+        padding: 15px;
         text-align: end;
         .el-input-group {
             width: 50%;
