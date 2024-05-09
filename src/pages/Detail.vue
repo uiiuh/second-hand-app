@@ -33,14 +33,12 @@
                         </div>
                         <p>{{ goodsInfo.desc }}</p>
                     </div>
-                    <button class="shop-button buy-button" @click="goTrade">立即购买</button>
-                    <button class="shop-button buy-button" @click="addToCart">加入购物车</button>
+                    <button class="shop-button buy-button" @click="reserve">预&nbsp;&nbsp;订</button>
                     <i class="el-icon-star-off star" @click="addToFavorite"></i>
                 </div>
             </div>
         </div>
     </div>
-    
 </template>
 
 <script>
@@ -98,58 +96,17 @@
                 });
             },
 
-            // 点击购买去到订单页
-            goTrade() {
-                // 将商品信息传递给订单组件
-                // 注意：触发事件时，事件要存在才行，而buyGoodsList事件在trade组件挂载时才绑定好。\
-                // 所以这里添加一个异步
-                // setTimeout(()=>{
-                //     let goodsList = []
-                //     goodsList.push(this.goodsInfo)
-                //     this.$bus.$emit('buyGoodsList',goodsList)
-                // },0)
-                // 还是采用Vuex吧
-                if(this.userInfo.userId) {
-                    let goodsList = []
-                    goodsList.push(this.goodsInfo)
-                    this.$store.dispatch('saveBuyGoodsList',goodsList)
-                    this.$router.push('/trade')
-                }else {
-                    this.$message({
-                        type: 'warning',
-                        message: '请先登录'
-                    })
-                    this.$router.push('/login')
+            // 预订商品
+            async reserve() {
+                const params = {
+                    userId: this.userInfo.userId,
+                    goodsId: this.goodsInfo.id
                 }
-            },
-
-            // 添加至购物车
-            async addToCart() {
-                if(this.userInfo.userId) {
-                    // 发请求
-                    const params = {
-                        productId: this.goodsInfo.id,
-                        userId: this.userInfo.userId
-                    }
-                    console.log(params);
-                    const result = await this.$API.reqAddToCart(params)
-                    if(result.code == 200) {
-                        this.$message({
-                            type: 'success',
-                            message: '加入成功'
-                        })
-                    }else if(result.code == 400) {
-                        this.$message({
-                            type: 'error',
-                            message: result.message
-                        })
-                    }
-                } else {
-                    this.$message({
-                        type: 'warning',
-                        message: '请先登录'
-                    })
-                    this.$router.push('/login')
+                const result = await this.$API.reqReserveGoods(params)
+                if(result.code == 200) {
+                    this.$message.success('预定成功')
+                }else {
+                    this.$message.error(result.error)
                 }
             },
 

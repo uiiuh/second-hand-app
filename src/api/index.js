@@ -92,6 +92,9 @@ export const reqUserPublishedGoods = (userId) => requests({ url:`/user/getUserPu
 // 修改密码
 export const reqChangePassword = (params) => requests({ url:'/user/changePassword', method:'post',data: params})
 
+// 预约商品
+export const reqReserveGoods = (params) => requests({ url:'/goods/reserveGoods', method:'post',data: params})
+
 
 
 
