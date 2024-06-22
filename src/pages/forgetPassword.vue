@@ -1,47 +1,55 @@
 <template>
-    <div class="change-password">
-        <el-form ref="ruleForm" :model="form" :rules="rules" label-position="right" label-width="auto" size="small">
-            <el-form-item prop="newPassword">
-                <span slot="label">
-                    密码:
-                </span>
-                <el-input type="password" v-model="form.newPassword" placeholder="请输入密码" show-password></el-input>
-            </el-form-item>
-            <el-form-item prop="confirmPassword">
-                <span slot="label">
-                    确认密码:
-                </span>
-                <el-input type="password" v-model="form.confirmPassword" placeholder="请再次输入密码" show-password></el-input>
-            </el-form-item>
-            <el-form-item prop="email">
-                <span slot="label">
-                    邮箱:
-                </span>
-                <el-input v-model="form.email" placeholder="请输入邮箱"></el-input>
-            </el-form-item>
-            <el-form-item prop="code">
-                <span slot="label">
-                    验证码:
-                </span>
-                <el-input v-model="form.code" placeholder="请输入邮箱验证码">
-                    <template slot="append">
-                        <el-button type="primary" class="send-code" @click="sendCode" :loading="codeStatu==='sending'" :disabled="codeStatu != 'unsend'">{{ codeMsg }}</el-button>
-                    </template>
-                </el-input>
-            </el-form-item>
-        </el-form>
-        <el-button type="primary" class="change-button" @click="changePassword">确&nbsp;&nbsp;认&nbsp;&nbsp;修&nbsp;&nbsp;改</el-button>
+    <div>
+        <Header></Header>
+        <div class="change-password">
+            <el-form ref="ruleForm" :model="form" :rules="rules" label-position="right" label-width="auto" size="small">
+                <el-form-item prop="userName">
+                    <span slot="label">
+                        用户名:
+                    </span>
+                    <el-input v-model="form.userName" placeholder="请输入用户名"></el-input>
+                </el-form-item>
+                <el-form-item prop="newPassword">
+                    <span slot="label">
+                        密码:
+                    </span>
+                    <el-input type="password" v-model="form.newPassword" placeholder="请输入密码" show-password></el-input>
+                </el-form-item>
+                <el-form-item prop="confirmPassword">
+                    <span slot="label">
+                        确认密码:
+                    </span>
+                    <el-input type="password" v-model="form.confirmPassword" placeholder="请再次输入密码" show-password></el-input>
+                </el-form-item>
+                <el-form-item prop="email">
+                    <span slot="label">
+                        邮箱:
+                    </span>
+                    <el-input v-model="form.email" placeholder="请输入邮箱"></el-input>
+                </el-form-item>
+                <el-form-item prop="code">
+                    <span slot="label">
+                        验证码:
+                    </span>
+                    <el-input v-model="form.code" placeholder="请输入邮箱验证码">
+                        <template slot="append">
+                            <el-button type="primary" class="send-code" @click="sendCode" :loading="codeStatu==='sending'" :disabled="codeStatu != 'unsend'">{{ codeMsg }}</el-button>
+                        </template>
+                    </el-input>
+                </el-form-item>
+            </el-form>
+            <el-button type="primary" class="change-button" @click="changePassword">确&nbsp;&nbsp;认&nbsp;&nbsp;修&nbsp;&nbsp;改</el-button>
+        </div>
     </div>
 </template>
 
 <script>
-    import { mapState } from 'vuex'
     export default {
-        name: 'ChangePassword',
+        name: 'forgetPassword',
         data() {
             return {
                 form: {
-                    userId: '',    // 用户名
+                    userName: '',    // 用户名
                     newPassword: '',    // 密码
                     confirmPassword: '',    // 确认密码
                     email: '',     // 手机号
@@ -49,6 +57,11 @@
                 },
                 // 表单验证规则
                 rules: {
+                    userName: {
+                        required: true,
+                        message: '请输入用户名',
+                        trigger: 'blur'
+                    },
                     newPassword: [
                         {
                             required: true,
@@ -100,11 +113,6 @@
                 codeMsg: '发送验证码'
             }
         },
-        computed: {
-            ...mapState({
-                userInfo: state => state.user.userInfo
-            })
-        },
         methods: {
             // 发送验证码
             async sendCode() {
@@ -137,7 +145,6 @@
             },
             // 修改密码
             async changePassword() {
-                this.form.userId = this.userInfo.userId
                 let passCheck = false
                 // 校验整个表单
                 this.$refs.ruleForm.validate((pass) => {
@@ -146,9 +153,9 @@
                 })
                 console.log(this.form);
                 if(passCheck) {
-                    const result = await this.$API.reqChangePassword(this.form)
+                    const result = await this.$API.reqForgetPassword(this.form)
                     if(result.code == 200) {
-                        this.$message.success('修改成功')
+                        this.$message.success('密码修改成功')
                         localStorage.clear()
                         this.$router.push('/login')
                     }

@@ -28,6 +28,27 @@ Vue.config.productionTip = false
 // 设置 baseURL：用于访问服务器端资源
 Vue.prototype.$baseURL = 'http://127.0.0.1:3007';
 
+// 格式化时间函数
+function formatDateTime(dateTimeString) {
+  const date = new Date(dateTimeString);
+
+  // 使用Date对象的方法获取年、月、日、小时、分钟和秒
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 月份从0开始，需要加1，并且确保两位数格式
+  const day = date.getDate().toString().padStart(2, '0'); // 确保两位数格式
+  const hours = date.getHours().toString().padStart(2, '0'); // 确保两位数格式
+  const minutes = date.getMinutes().toString().padStart(2, '0'); // 确保两位数格式
+  const seconds = date.getSeconds().toString().padStart(2, '0'); // 确保两位数格式
+
+  // 构建所需的日期时间格式字符串
+  const formattedDateTime = year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+
+  // 返回格式化后的日期时间字符串
+  return formattedDateTime;
+}
+// 挂载到Vue原型上
+Vue.prototype.$formatDateTime = formatDateTime
+
 new Vue({
   render: h => h(App),
   // 配置路由，全局都会有 $router 和 $route 属性（不论是路由组件还是非路由组件）

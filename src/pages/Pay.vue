@@ -12,10 +12,12 @@
                 <span>应付金额：<span class="price">￥{{ totalPrice }}</span></span>
             </div>
             <div class="code-box">
-                <h4>请使用微信扫码支付</h4>
+                <h4>请使用支付宝扫码支付</h4>
                 <!-- 是一个图片 -->
-                <img src="../../public/images/default_avatar.jpg" alt="">
+                <img :src="codeUrl" alt="">
                 <p>扫一扫快速付款</p>
+                <el-button type="danger" size="medium" class="pay-fail" @click="payFail">支付失败</el-button>
+                <el-button type="success" size="medium" class="pay-success" @click="paySuccess">支付成功</el-button>
             </div>
         </div>
     </div>
@@ -29,11 +31,14 @@
             return {
                 // orderId: null,
                 // orderInfo: {}
+                codeStr: '',
+                codeUrl: ''
             }
         },
         mounted() {
             // this.orderId = this.$route.query.orderId
             // this.getOrderInfo()
+            this.getQRCode()
         },
         computed: {
             ...mapState({
@@ -53,14 +58,49 @@
             //     if(result.code == 200) {
             //         this.orderInfo = result.data
             //     }
-            // }
+            // },
+            async getQRCode() {
+                const result = await this.$API.reqQRCode()
+                if(result.code == 200) {
+                    this.codeUrl = result.data
+                    // 调用 QRCode 的方法 toDataURL 生成二维码，要使用 await和async
+                    // this.codeUrl = await QRCode.toDataURL(this.codeStr) // 返回一个二维码图片地址
+                }
+            },
+            // 支付失败
+            payFail() {
+                this.$router.push({
+                    name: 'paymentresult',
+                    query: {
+                        payResult: 'fail'
+                    }
+                })
+            },
+
+            // 支付成功
+            async paySuccess() {
+                const orderIdArr = []
+                this.payOrderList.forEach(item => {
+                    orderIdArr.push(item.id)
+                })
+                console.log(orderIdArr);
+                const result = await this.$API.reqMarkOrdersAsPaid(orderIdArr)
+                if(result.code == 200) {
+                    this.$router.push({
+                        name: 'paymentresult',
+                        query: {
+                            payResult: 'success'
+                        }
+                    })
+                }
+            }
         }
     }
 </script>
 
 <style scoped lang="less">
     .pay {
-        margin: 50px auto;
+        margin: 40px auto;
         padding: 25px;
         width: 60%;
         background-color: #fff;
@@ -95,14 +135,24 @@
             margin-top: 25px;
             text-align: center;
             img {
-                margin: 20px 0;
+                margin: 20px 0 10px;
                 width: 115px;
                 height: 115px;
             }
             p {
                 color: #ccc;
                 font-size: 14px;
+                margin-bottom: 10px;
             }
+
+            .pay-fail,
+            .pay-success {
+                width: 100px;
+            }
+
+            .pay-fail {
+                margin-right: 10px;
+            } 
         }
     }
 </style>

@@ -31,10 +31,9 @@
                 <!-- 轮播图 -->
                 <div class="banner">
                     <el-carousel height="350px" trigger="click">
-                        <el-carousel-item></el-carousel-item>
-                        <el-carousel-item></el-carousel-item>
-                        <el-carousel-item></el-carousel-item>
-                        <el-carousel-item></el-carousel-item>
+                        <el-carousel-item v-for="(item,index) in carouselImages" :key="index">
+                            <img :src="item" alt="">
+                        </el-carousel-item>
                     </el-carousel>
                 </div>
                 <!-- 用户信息 -->
@@ -46,7 +45,8 @@
                         </a>
                     </div>
                     <h4 class="greeting">
-                        <span>{{ userInfo.userName}}</span> {{ greeting }}</h4>
+                        <span>{{ userInfo.userName}}</span> {{ greeting }}
+                    </h4>
                     <div v-show="!isLogin" class="log-out">
                         <el-button type="primary" class="login" @click="$router.push('login')">登&nbsp;录</el-button>
                         <el-button type="primary" class="register" @click="$router.push('register')">注&nbsp;册</el-button>
@@ -73,23 +73,22 @@
                     <div class="bulletin-board">
                         <h4 class="title">公告牌</h4>
                         <ul class="notice">
-                            <li>
-                                <a href="javascript:;">[公告]备战开学季，全物品8折，快来抢购吧</a>
-                            </li>
-                            <li>
-                                <a href="javascript:;">[公告]开学季，全物品8折</a>
-                            </li>
-                            <li>
-                                <a href="javascript:;">[公告]开学季，全物品8折</a>
-                            </li>
-                            <li>
-                                <a href="javascript:;">[公告]开学季，全物品8折</a>
-                            </li>
-                            <li>
-                                <a href="javascript:;">[公告]开学季，全物品8折</a>
+                            <li v-for="(item,index) in notice" :key="index">
+                                <span @click="checkNotice(item)">>>> {{ item.title }}</span>
                             </li>
                         </ul>
                     </div>
+                    <!-- 查看公告 -->
+                    <el-dialog
+                        :title="noticeInfo.title"
+                        :visible="checkDialog"
+                        width="45%"
+                        @close="checkDialog=false"
+                        class="check-dialog"
+                    >
+                        <p class="publish-time">{{ this.$formatDateTime(noticeInfo.publishTime) }}</p>
+                        <p class="notice-content">{{ noticeInfo.content }}</p>
+                    </el-dialog>
                 </div>
             </div>
             <!-- 今日上新 -->
@@ -114,38 +113,21 @@
             <!-- 今日推荐 -->
             <div class="like">
                 <h3>今日推荐</h3>
-                <ul class="goods-container clearfix">
-                    <li>
-                        <a href="javascript:;"></a>
-                    </li>
-                    <li>
-                        <a href="javascript:;"></a>
-                    </li>
-                    <li>
-                        <a href="javascript:;"></a>
-                    </li>
-                    <li>
-                        <a href="javascript:;"></a>
-                    </li>
-                    <li>
-                        <a href="javascript:;"></a>
-                    </li>
-                    <li>
-                        <a href="javascript:;"></a>
-                    </li>
-                    <li>
-                        <a href="javascript:;"></a>
-                    </li>
-                    <li>
-                        <a href="javascript:;"></a>
-                    </li>
-                    <li>
-                        <a href="javascript:;"></a>
-                    </li>
-                    <li>
-                        <a href="javascript:;"></a>
+                <ul v-show="recommendList.length!=0" class="goods-container clearfix" @click="goDetail">
+                    <li v-for="(item,index) in recommendList" :key="index" :data-goodsId="item.id">
+                        <div class="cover">
+                            <img :src="item.pictures[0].fileUrl" alt="">
+                        </div>
+                        <div class="info">
+                            <h4 class="title">{{ item.name }}</h4>
+                            <div>
+                                <span class="rmb">¥</span>
+                                <span class="price">{{ item.price }}</span>
+                            </div>
+                        </div>
                     </li>
                 </ul>
+                <el-empty v-show="recommendList.length==0" description="暂无数据"></el-empty>
             </div>
         </div>
         <Footer></Footer>
@@ -166,12 +148,17 @@
         mounted() {
             const token = localStorage.getItem('token')
             if(token) this.isLogin = true
-
             // 设置问候语
             this.setGreeting()
-
+            // 获取首页轮播图
+            this.getCarouselImages()
             // 获取今日上新商品
             this.getNewGoods()
+            // 获取公告
+            this.getNotice()
+            // 获取推荐商品
+            this.getRecommendedGoods()
+            
         },
         data() {
             return {
@@ -180,6 +167,11 @@
                 keyword: '',
                 currentMenuIndex: -1,   // 当前一级分类索引值
                 newGoodsList: [],    // 今日上新商品列表
+                carouselImages: [],    // 轮播图
+                notice: [],    // 公告
+                checkDialog: false,    // 查看公告
+                noticeInfo: {},    // 公告信息
+                recommendList: [], // 推荐商品列表
             }
         },
         computed: {
@@ -245,6 +237,43 @@
                     }
                 }
             },
+
+            // 获取首页轮播图
+            async getCarouselImages() {
+                const result = await this.$API.reqCarouselImages()
+                if(result.code == 200) {
+                    this.carouselImages = result.data
+                }
+            },
+
+            // 获取平台公告
+            async getNotice() {
+                const result = await this.$API.reqNotice()
+                if(result.code == 200) {
+                    this.notice = result.data
+                }
+            },
+
+            // 查看公告
+            checkNotice(noticeInfo) {
+                this.checkDialog = true
+                this.noticeInfo = noticeInfo
+            },
+
+            // 推荐商品
+            async getRecommendedGoods() {
+                const result = await this.$API.reqRecommendedGoods()
+                if(result.code == 200) {
+                    let data = result.data
+                    console.log('recommendList',data)
+                    data = data.map(item => {
+                        item.pictures = JSON.parse(item.pictures)
+                        return item
+                    })
+                    console.log('recommendList',data)
+                    this.recommendList = data
+                }
+            }
         }
     }
 </script>
@@ -446,7 +475,8 @@
                     .notice {
                         li {
                             margin: 5px 0;
-                            a {
+                            span {
+                                cursor: pointer;
                                 display: block;
                                 // 不换行
                                 white-space: nowrap;
@@ -474,6 +504,20 @@
                 margin: 15px 0;
                 font-size: 18px;
             }
+        }
+    }
+    .check-dialog {
+        ::v-deep .el-dialog {
+            height: 300px;
+        }
+
+        ::v-deep .el-dialog__body {
+            padding: 0 20px;
+        }
+
+        .publish-time {
+            margin-bottom: 15px;
+            font-size: 12px;
         }
     }
 </style>

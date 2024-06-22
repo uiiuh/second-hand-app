@@ -1,12 +1,15 @@
 <template>
     <div>
         <div class="favorite">
-            <h4 class="title">全部收藏</h4>
+            <div class="header">
+                <h4 class="title">全部收藏</h4>
+                <span @click="clearAll">清空收藏夹</span>
+            </div>
             <ul class="favorite-list">
                 <li v-for="(item,index) in favoriteList" :key="index" class="favorite-card">
                     <div class="card-container">
                         <img :src="item.pictures[0].fileUrl" alt="">
-                        <div class="info">
+                        <div class="info" @click="goDetail(item.id)">
                             <h4 class="text-overflow">{{ item.name }}</h4>
                             <span class="text-overflow">{{ item.desc }}</span>
                         </div>
@@ -71,6 +74,34 @@
                     })
                     this.getUserFavorites()
                 }
+            },
+            // 清空收藏夹
+            async clearAll() {
+                this.$confirm('是否确认清空收藏夹?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$API.reqClearFavorites(this.favoriteInfo.favoriteId).then(
+                        res => {
+                            // console.log(res)
+                            if(res.code == 200) {
+                                this.$message.success('清空成功')
+                                this.getUserFavorites()
+                            }else {
+                                this.$message.error(res.message)
+                            }
+                        }
+                    )
+                })
+            },
+
+            // 去到详情页
+            goDetail(goodsId) {
+                this.$router.push({
+                    name: 'detail',
+                    params: { id: goodsId } // 将商品 ID 作为参数传递给 Detail 组件
+                });
             }
         }
     }
@@ -87,6 +118,17 @@
 
         .title {
             margin-bottom: 15px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            span {
+                cursor: pointer;
+                &:hover {
+                    color: #409EFF;
+                }
+            }
         }
 
         .favorite-card {
@@ -115,6 +157,7 @@
                 .info {
                     margin: 0 15px;
                     width: 40%;
+                    cursor: pointer;
 
                     h4 {
                         margin-bottom: 5px;

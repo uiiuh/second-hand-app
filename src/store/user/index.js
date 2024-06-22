@@ -33,6 +33,11 @@ const actions = {
             dispatch('getUserInfo')
             vm.$message.success('修改成功')
         }
+    },
+    // 退出登录
+    logOut({commit}) {
+        console.log('action--getUserInfo')
+        commit('LOGOUT')
     }
 }
 const mutations = {
@@ -40,6 +45,10 @@ const mutations = {
         console.log('mutations--GETUSERINFO')
         state.userInfo = userInfo
     },
+    LOGOUT(state) {
+        state.token = null
+        state.userInfo = {}
+    }
 }
 const state = {
     // token令牌，从本地存储中取

@@ -225,6 +225,14 @@
 
         .modify {
             margin-top: 15px;
+            width: 120px;
+            border: none;
+            transition: all .3s;
+            background-color: #7e62c2;
+
+            &:hover {
+                background-color: #6c54a7;
+            }
         }
 
         ::v-deep .el-dialog__body {

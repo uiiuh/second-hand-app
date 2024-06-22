@@ -9,6 +9,10 @@ import Detail from '@/pages/Detail'
 import SellGoods from '@/pages/SellGoods'
 import Trade from '@/pages/Trade'
 import Pay from '@/pages/Pay'
+import PaymentResult from '@/pages/PaymentResult'
+import PersonalHomepage from '@/pages/PersonalHomepage'
+import forgetPassword from '@/pages/forgetPassword'
+
 
 export default [
     {
@@ -42,12 +46,22 @@ export default [
         component: Register
     },
     {
+        path: '/forgetpassword',
+        name: 'forgetpassword',
+        component: forgetPassword
+    },
+    {
         path: '/message/:id?',
         name: 'message',
         component: Message,
         meta: {
             requiresAuth: true,
         }
+    },
+    {
+        path: '/personalhomepage/:id',
+        name: 'personalhomepage',
+        component: PersonalHomepage,
     },
     {
         path: '/center',
@@ -62,31 +76,49 @@ export default [
                 name: 'personal',
                 path: 'personal',   // 二级路由可以不用写 ' / '
                 component: () => import('@/pages/Center/Personal'),
+                meta: {
+                    requiresAuth: true,
+                },
             },
             {
                 name: 'myorder',
                 path: 'myorder',
                 component: () => import('@/pages/Center/Order'),
+                meta: {
+                    requiresAuth: true,
+                },
             },
             {
                 name: 'myfavorite',
                 path: 'myfavorite',
                 component: () => import('@/pages/Center/Favorite'),
+                meta: {
+                    requiresAuth: true,
+                },
             },
             {
                 name: 'mycart',
                 path: 'mycart',
                 component: () => import('@/pages/Center/Cart'),
+                meta: {
+                    requiresAuth: true,
+                },
             },
             {
                 name: 'mypublished',
                 path: 'mypublished',
                 component: () => import('@/pages/Center/Published'),
+                meta: {
+                    requiresAuth: true,
+                },
             },
             {
                 name: 'changepassword',
                 path: 'changepassword',
                 component: () => import('@/pages/Center/ChangePassword'),
+                meta: {
+                    requiresAuth: true,
+                },
             },
             {
                 // 路由重定向
@@ -115,6 +147,14 @@ export default [
         path: '/pay',
         name: 'pay',
         component: Pay,
+        meta: {
+            requiresAuth: true,
+        }
+    },
+    {
+        path: '/paymentresult',
+        name: 'paymentresult',
+        component: PaymentResult,
         meta: {
             requiresAuth: true,
         }

@@ -44,7 +44,7 @@
                                     <div class="message-content">
                                         <div class="top">
                                             <span class="name">{{ item.senderUserId==userInfo.userId? userInfo.userName:contactInfo.userName }}</span>
-                                            <span class="time">{{ item.sentTime }}</span>
+                                            <span class="time">{{ $formatDateTime(item.sentTime) }}</span>
                                         </div>
                                         <p class="content">
                                             {{ item.content }}
@@ -80,7 +80,7 @@
                             {{ contactInfo.userName }}
                         </div>
                         <div class="check">
-                            <el-button type="primary" size="small" class="check-btn">进入主页</el-button>
+                            <el-button type="primary" size="small" class="check-btn" @click="checkHomepage">进入主页</el-button>
                         </div>
                     </div>
                 </div>
@@ -196,9 +196,13 @@
                     if(result.code == 200) {
                         let data = result.data
                         data = data.map(item => {
-                            const lastTime = Date.parse(item.lastMessageTime)
-                            const timeDiff = this.getTimeDiff(lastTime)
-                            item.timeDiff = timeDiff
+                            if(item.lastMessageTime) {
+                                const lastTime = Date.parse(item.lastMessageTime)
+                                const timeDiff = this.getTimeDiff(lastTime)
+                                item.timeDiff = timeDiff
+                            } else {
+                                item.timeDiff = ''
+                            }
                             return item
                         })
                         this.conversationList = result.data
@@ -325,6 +329,18 @@
                 if (messageList) {
                     messageList.scrollTop = messageList.scrollHeight;
                 }
+            },
+
+            // 查看个人主页
+            checkHomepage() {
+                const userId = this.contactInfo.userId
+                // 将用户id传给个人主页组件
+                this.$router.push({
+                    name: 'personalhomepage',
+                    params: {
+                        id: userId
+                    }
+                })
             }
         }
     }

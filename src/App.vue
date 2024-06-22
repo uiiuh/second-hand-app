@@ -39,6 +39,8 @@
             background-color: #fff;
             transition: all .2s linear;
             cursor: pointer;
+            overflow: hidden;
+            border: 1px solid #E4E7ED;
 
             &:nth-child(5n) {
                 margin-right: 0;

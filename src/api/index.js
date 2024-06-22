@@ -35,6 +35,9 @@ export const reqGoodsInfo = (id) => requests({url:`/goods/getGoodsById?id=${id}`
 // 发布商品
 export const reqReleaseGoods = (goodsInfo) => requests({ url:'/goods/releaseGoods', method:'post', data: goodsInfo })
 
+// 创建聊天关系
+export const reqCreateContacts = (contacts) => requests({ url:'/chat/createChatRelationship', method:'post', data: contacts })
+
 // 查找用户聊天关系
 export const reqChatContacts = (userId) => requests({ url:'/chat/findChatContacts', method:'post', data: {userId} })
 
@@ -62,14 +65,26 @@ export const reqAddToCart = (params) => requests({ url:'/cart/addToCart', method
 // 将商品从购物车中删除
 export const reqDeleteCartItem = (params) => requests({ url:'/cart/deleteCartItem', method:'post',data: params})
 
+// 清空购物车
+export const reqClearCart = (userId) => requests({ url:'/cart/clearCart', method:'post',data: {userId}})
+
 // 查询用户所有订单
 export const reqUserOrders = (userId) => requests({ url:`/order/getUserOrders/${userId}`, method:'get'})
 
 // 取消订单
 export const reqCancelOrder = (orderId) => requests({ url:`/order/cancelOrder/${orderId}`, method:'get'})
 
+// 确认订单收货
+export const reqConfirmOrderReceived = (orderId) => requests({ url:`/order/confirmOrderReceived`, method:'post', data: {orderId} })
+
 // 删除订单
 export const reqDeleteOrder = (orderId) => requests({ url:`/order/deleteOrder/${orderId}`, method:'get'})
+
+// 评论订单
+export const reqUpdateProductComment = (form) => requests({ url:`/order/updateProductComment`, method:'post', data: form })
+
+// 查看评论
+export const reqViewProductComment = (orderId) => requests({ url:`/order/viewProductComment/${orderId}`, method:'get'})
 
 // 添加至收藏夹
 export const reqAddToFavorites = (params) => requests({ url:'/favorite/addToFavorites', method:'post',data: params})
@@ -79,6 +94,9 @@ export const reqUserFavorites = (userId) => requests({ url:`/favorite/getUserFav
 
 // 将商品从收藏夹中删除
 export const reqDeleteFavoriteItem = (params) => requests({ url:'/favorite/deleteFavoriteItem', method:'post',data: params})
+
+// 清空收藏夹
+export const reqClearFavorites = (favoriteId) => requests({ url:'/favorite/clearFavorites', method:'post',data: {favoriteId}})
 
 // 更新用户头像
 export const reqUpdateAvatar = (params) => requests({ url:'/user/updateAvatar', method:'post',data: params})
@@ -91,6 +109,27 @@ export const reqUserPublishedGoods = (userId) => requests({ url:`/user/getUserPu
 
 // 修改密码
 export const reqChangePassword = (params) => requests({ url:'/user/changePassword', method:'post',data: params})
+
+// 忘记密码
+export const reqForgetPassword = (params) => requests({ url:'/user/forgetPassword', method:'post',data: params})
+
+// 获取首页轮播图
+export const reqCarouselImages = () => requests({ url:'/goods/getCarouselImages', method:'get'})
+
+// 获取公告
+export const reqNotice = () => requests({ url:'/goods/getPlatformNotices', method:'get'})
+
+// 获取标识支付功能尚未完成信息的二维码
+export const reqQRCode = () => requests({ url:'/order/getUnfinishedPaymentQRCode', method:'get'})
+
+// 支付成功
+export const reqMarkOrdersAsPaid = (orderIds) => requests({ url:'/order/markOrdersAsPaid', method:'post',data: { orderIds }})
+
+// 获取个人首页信息
+export const reqUserAndProducts = (userId) => requests({ url:`/user/getUserAndProducts/${userId}`, method:'get'})
+
+// 获取推荐商品
+export const reqRecommendedGoods = () => requests({ url:'/goods/getRecommendedGoods', method:'get'})
 
 
 

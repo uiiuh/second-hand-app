@@ -9,7 +9,7 @@
                 </div>
                 <div>
                     <button class="shop-button" @click="contactSeller(sellerInfo.userId)">联系商家</button>
-                    <button class="shop-button">查看主页</button>
+                    <button class="shop-button" @click="checkHomepage">查看主页</button>
                 </div>
             </div>
             <div class="goods-info">
@@ -30,6 +30,10 @@
                         <div class="delivery">
                             <span>配送方式：</span>
                             <span>{{ goodsInfo.deliveryMethod }}</span>
+                        </div>
+                        <div class="delivery" v-show="goodsInfo.deliveryMethod==='买家自取'">
+                            <span>自提地址：</span>
+                            <span>{{ goodsInfo.address }}</span>
                         </div>
                         <p>{{ goodsInfo.desc }}</p>
                     </div>
@@ -90,12 +94,27 @@
             },
 
             // 联系卖家
-            contactSeller(userId) {
-                // 跳转到消息路由，并将卖家用户id传过去
-                this.$router.push({
-                    name: 'message',
-                    params: { id: userId } // 将商品 ID 作为参数传递给 Detail 组件
-                });
+            async contactSeller(userId) {
+                if(localStorage.getItem('token')) {
+                    // 创建于商家的聊天关系
+                    const contacts = {
+                        userId: this.userInfo.userId,
+                        businessId: this.sellerInfo.userId,
+                    }
+                    const result = await this.$API.reqCreateContacts(contacts)
+                    // 创建完毕后，跳转到消息路由，并将卖家用户id传过去
+                    if(result.code == 200) {
+                        this.$router.push({
+                            name: 'message',
+                            params: { id: userId } // 将商品 ID 作为参数传递给 Detail 组件
+                        });
+                    }else {
+                        this.$message.error('error')
+                    }
+                }else {
+                    this.$message.warning('请先登录')
+                    this.$router.push('/login')
+                }
             },
 
             // 点击购买去到订单页
@@ -181,6 +200,18 @@
                     })
                     this.$router.push('/login')
                 }
+            },
+
+            // 查看个人主页
+            checkHomepage() {
+                const userId = this.sellerInfo.userId
+                // 将用户id传给个人主页组件
+                this.$router.push({
+                    name: 'personalhomepage',
+                    params: {
+                        id: userId
+                    }
+                })
             }
         },
     }

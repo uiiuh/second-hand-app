@@ -17,18 +17,51 @@
                                 <span class="text-overflow">{{ item.goodsInfo.desc }}</span>
                             </div>
                             <div class="price">￥{{ item.goodsInfo.price }}</div>
-                            <div class="delivery">{{ item.goodsInfo.deliveryMethod }}</div>
+                            <div class="delivery">
+                                {{ item.goodsInfo.deliveryMethod }}
+                                <div v-show="item.goodsInfo.deliveryMethod==='买家自取'" style="padding: 5px 0">自提地址：{{item.goodsInfo.address}}</div>
+                            </div>
                         </div>
                         <div class="handle-btn">
                             <button class="pay" v-show="item.status==='未支付'" @click="goPay(item)">立即付款</button>
-                            <button class="confirm" v-show="item.status==='已支付'">确认收货</button>
-                            <button class="cancel" v-show="item.status!='已确认收货' && item.status!='已取消'" @click="cancelOrder(item.id)">取消订单</button>
+                            <button class="confirm" v-show="item.status==='已支付'" @click="confirmReceipt(item.id)">确认收货</button>
+                            <button class="cancel" v-show="item.status!='已完成' && item.status!='已评论' && item.status!='已取消'" @click="cancelOrder(item.id)">取消订单</button>
                             <button class="delete" v-show="item.status=='已取消'" @click="deleteOrder(item.id)">删除订单</button>
+                            <button class="confirm" v-show="item.status=='已完成'" @click="comment(item.id)">去评论</button>
+                            <button class="confirm" v-show="item.status=='已评论'" @click="checkComment(item.id)">查看评论</button>
                         </div>
                     </div>
                 </li>
             </ul>
             <el-empty v-show="orderList.length==0" description="您尚未生成订单~"></el-empty>
+            <!-- 发布评论 -->
+            <el-dialog
+                title="发表评论"
+                :visible="commentDialog"
+                width="50%"
+                class="comment-dialog"
+                @close="cancelAddComment"
+            >
+                <el-form ref="addForm" :model="form" :rules="rules" label-position="right" label-width="auto" size="small">
+                    <el-form-item label="评论内容" prop="comment">
+                        <el-input type="textarea" v-model="form.comment" autosize></el-input>
+                    </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="cancelAddComment">取 消 发 表</el-button>
+                    <el-button type="primary" @click="addComment">确 定 发 表</el-button>
+                </div>
+            </el-dialog>
+            <!-- 查看评论 -->
+            <el-dialog
+                title="评论内容"
+                :visible="checkDialog"
+                width="45%"
+                @close="checkDialog=false;commentContent=''"
+                class="check-dialog"
+            >
+                <p>{{ commentContent }}</p>
+            </el-dialog>
         </div>
     </div>
 </template>
@@ -40,7 +73,22 @@
         name: 'Order',
         data() {
             return {
-                orderList: []
+                orderList: [],
+                commentDialog: false,
+                // 评论
+                form: {
+                    orderId: null,
+                    comment: '',
+                },
+                rules: {
+                    comment: {
+                        required: true,
+                        message: '请输入评论内容',
+                        trigger: 'blur'
+                    }
+                },
+                checkDialog: false,   //查看评论
+                commentContent: '',    // 查看已评论的内容
             }
         },
         mounted() {
@@ -87,7 +135,7 @@
             goPay(orderInfo) {
                 console.log(orderInfo);
                 this.$store.dispatch('savePayOrderList',[orderInfo])
-                this.$router.push('pay')
+                this.$router.push('/pay')
             },
 
             // 取消订单
@@ -112,6 +160,64 @@
                         message: '删除成功'
                     })
                     this.getOrders()
+                }
+            },
+
+            // 确认收货
+            async confirmReceipt(orderId) {
+                console.log('orderId确认收货',orderId);
+                const result = await this.$API.reqConfirmOrderReceived(orderId)
+                if(result.code == 200) {
+                    this.$message({
+                        type: 'success',
+                        message: '已确认收货'
+                    })
+                    this.getOrders()
+                }
+            },
+
+            // 评论
+            comment(orderId) {
+                console.log(orderId);
+                this.form.orderId = orderId
+                this.commentDialog = true
+            },
+
+            // 取消发表评论
+            cancelAddComment() {
+                this.commentDialog = false
+                this.form.orderId = null
+                this.form.comment = ''
+            },
+
+            // 确定发表评论
+            async addComment() {
+                let passCheck = false
+                // 校验整个表单
+                this.$refs.addForm.validate((pass) => {
+                    console.log(pass)
+                    passCheck = pass
+                })
+                if(passCheck) {
+                    console.log(this.form);
+                    const result = await this.$API.reqUpdateProductComment(this.form)
+                    if(result.code == 200) {
+                        this.commentDialog = false
+                        this.$message.success('发表成功')
+                        this.getOrders()
+                    }else {
+                        this.$message.error('发表失败')
+                    }
+                }
+            },
+
+            // 查看评论
+            async checkComment(orderId) {
+                console.log(orderId);
+                const result = await this.$API.reqViewProductComment(orderId)
+                if(result.code == 200) {
+                    this.commentContent = result.data
+                    this.checkDialog = true
                 }
             }
         }

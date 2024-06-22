@@ -18,10 +18,10 @@
                         <div class="delivery">{{ item.deliveryMethod }}</div>
                     </div>
                     <div class="handle-btn">
-                        <!-- <button class="pay" v-show="item.status==='未支付'" @click="goPay(item)">立即付款</button>
-                        <button class="confirm" v-show="item.status==='已支付'">确认收货</button>
-                        <button class="cancel" v-show="item.status!='已确认收货' && item.status!='已取消'" @click="cancelOrder(item.id)">取消订单</button>
-                        <button class="delete" v-show="item.status=='已取消'" @click="deleteOrder(item.id)">删除订单</button> -->
+                        <button class="pay" v-show="item.status==='审核通过'">下架</button>
+                        <button class="confirm" v-show="item.status==='审核未通过'">编辑</button>
+                        <button class="delete" v-show="item.status=='未审核'||item.status=='已下架'">删除</button>
+                        <button class="delete" v-show="item.status=='已被预订'||item.status=='已付款'||item.status=='交易成功'">查看</button>
                     </div>
                 </div>
             </li>

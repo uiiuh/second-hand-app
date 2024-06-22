@@ -1,9 +1,27 @@
 <template>
     <footer class="footer">
         <ul class="content">
-            <li></li>
-            <li></li>
-            <li></li>
+            <li>
+                购物指南
+                <div class="option">
+                    <a href="javascript:;">购物流程</a>
+                    <a href="javascript:;">常见问题</a>
+                </div>
+            </li>
+            <li>
+                支付方式
+                <div class="option">
+                    <a href="javascript:;">在线支付</a>
+                    <a href="javascript:;">货到付款</a>
+                </div>
+            </li>
+            <li>
+                售后服务
+                <div class="option">
+                    <a href="javascript:;">售后政策</a>
+                    <a href="javascript:;">取消订单</a>
+                </div>
+            </li>
             <li>
                 平台介绍
                 <div class="option">

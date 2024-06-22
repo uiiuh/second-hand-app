@@ -96,14 +96,14 @@
             async getGoodsList(keyword) {
                 this.keyword = keyword
                 let params = {
-                    keyword: this.keyword,
                     pageNo: this.pageNo,
                     pageSize: this.pageSize
                 }
+                if(this.keyword != undefined && this.keyword.trim() != '') params.keyword = this.keyword
                 if(this.categoryId) params.categoryId = this.categoryId
                 console.log('params--',params)
                 // console.log('$API',this.$API)
-                if((this.keyword != undefined && this.keyword.trim() != '') || this.categoryId) {
+                // if((this.keyword != undefined && this.keyword.trim() != '') || this.categoryId) {
                     const result = await this.$API.reqSearchGoodsList(params)
                     if(result.code == 200) {
                         let data = result.data
@@ -115,7 +115,7 @@
                         this.goodsList = data
                         this.total = result.total
                     }
-                }
+                // }
             },
             setCategoryId(categoryId) {
                 this.categoryId = categoryId

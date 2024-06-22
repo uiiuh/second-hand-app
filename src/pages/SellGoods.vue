@@ -39,6 +39,16 @@
                             <el-option v-for="(item,index) in deliveryList" :key="index" :label="item.deliveryName" :value="item.deliveryName"></el-option>
                         </el-select>
                     </el-form-item>
+                    <el-form-item label="自取地点：" prop="address" v-show="form.deliveryMethod=='买家自取'">
+                        <el-input 
+                            type="textarea"
+                            v-model="form.address"
+                            placeholder="请输入自取地点"
+                            :autosize="{ minRows: 2, maxRows: 5}"
+                            maxlength="200"
+                            show-word-limit
+                        ></el-input>
+                    </el-form-item>
                     <el-form-item label="商品图片：" prop="pictures">
                         <el-upload
                             action="http://127.0.0.1:3007/api/upload/uploadFile"
@@ -74,6 +84,7 @@
                     desc: '',
                     deliveryMethod: '',
                     pictures: [],
+                    address: ''
                 },
                 rules: {
                     name: [
@@ -116,6 +127,15 @@
                         required: true,
                         message: '请上传商品图片',
                         trigger: 'blur'
+                    },
+                    address: {
+                        validator: (rule, value, callback) => {
+                            if (this.form.deliveryMethod == '买家自取' && !this.form.address) {
+                                callback(new Error('请输入自提地点'))
+                            } else {
+                                callback()
+                            }
+                        }
                     }
                 },
                 
@@ -177,13 +197,13 @@
             beforeUpload(file) {
                 // console.log(file)
                 const isJPG = file.type === 'image/jpeg' || file.type === 'image/png';
-                const isLt2M = file.size / 1024 / 1024 < 5;
+                const isLt2M = file.size / 1024 / 1024 < 10;
 
                 if (!isJPG) {
                 this.$message.error('只能上传 jpg 或 png 格式的图片!');
                 }
                 if (!isLt2M) {
-                this.$message.error('上传图片大小不能超过 5MB!');
+                this.$message.error('上传图片大小不能超过 10MB!');
                 }
                 return isJPG && isLt2M;
             },
@@ -235,7 +255,10 @@
                 if(result.code == 200) {
                     console.log('发布成功')
                     // 发布成功，则跳转到首页
+                    this.$message.success('发布成功，请等待管理员审核')
                     this.$router.push('/home')
+                }else {
+                    this.$message.error(result.error)
                 }
             }
         }

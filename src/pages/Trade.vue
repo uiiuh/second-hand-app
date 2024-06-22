@@ -4,8 +4,34 @@
         <div class="trade">
             <div class="header">确&nbsp;&nbsp;&nbsp;&nbsp;认&nbsp;&nbsp;&nbsp;&nbsp;订&nbsp;&nbsp;&nbsp;&nbsp;单</div>
             <div class="address-card">
-                <div>如果配送方式是卖家配送，则点击跳转到收货地址。算了，这个不严谨</div>
+                <div class="title">收货地址</div>
+                <div class="address">
+                    <div>{{ userInfo.shippingAddress }}</div>
+                    <i class="el-icon-edit" @click="editDialog=true"></i>
+                </div>
             </div>
+            <!-- 修改收货地址 -->
+            <el-dialog
+                title="修改收货地址"
+                :visible="editDialog"
+                width="50%"
+                class="edit-dialog"
+                @close="editDialog=false;address=''"
+            >
+                <el-input 
+                    type="textarea"
+                    v-model="address"
+                    placeholder="请输入收货地址"
+                    :autosize="{ minRows: 2, maxRows: 5}"
+                    maxlength="200"
+                    show-word-limit
+                ></el-input>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="editDialog=false;address=''">取 消</el-button>
+                    <el-button type="primary" @click="editDialog=false;userInfo.shippingAddress=address">确 定</el-button>
+                </div>
+            </el-dialog>
+
             <div class="goods">
                 <div class="title">商品清单</div>
                 <ul>
@@ -16,7 +42,10 @@
                             <span class="text-overflow">{{ item.desc }}</span>
                         </div>
                         <div class="price">￥{{ item.price }}</div>
-                        <div class="delivery">{{ item.deliveryMethod }}</div>
+                        <div class="delivery">
+                            {{ item.deliveryMethod }}
+                            <div v-show="item.deliveryMethod==='买家自取'" style="padding: 5px 0">自提地址：{{item.address}}</div>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -38,6 +67,8 @@
         data() {
             return {
                 goodsId: null,
+                editDialog: false,
+                address: '',
             }
         },
         mounted() {
@@ -64,9 +95,10 @@
                 const buyGoodsList = this.buyGoodsList
                 let orderSuccessArr = []
                 for(let i = 0; i < buyGoodsList.length; i++) {
+                    // let address = this.
                     const orderInfo = {
                         purchaserId: this.userInfo.userId,
-                        address: '123',
+                        address: this.userInfo.shippingAddress,
                         goodsInfo: buyGoodsList[i],
                         totalPrice: buyGoodsList[i].price
                     }
@@ -83,6 +115,7 @@
                     }
                 }
                 if(orderSuccessArr.length === buyGoodsList.length) {
+                    console.log('orderSuccessArr---',orderSuccessArr);
                     this.$store.dispatch('savePayOrderList',orderSuccessArr)
                     this.$router.push('/pay')
                 }
@@ -107,14 +140,32 @@
 
         .address-card {
             margin-bottom: 15px;
+            padding: 5px 20px;
+            .address {
+                display: flex;
+                align-items: center;
+                padding: 5px 0;
+
+                i {
+                    margin-left: 10px;
+                    margin-top: 3px;
+                    cursor: pointer;
+
+                    &:hover {
+                        color: #409EFF;
+                    }
+                }
+            }
+        }
+
+        .title {
+            font-weight: 700;
+            margin-bottom: 10px;
         }
 
         .goods {
             padding: 0 20px;
-            .title {
-                font-weight: 700;
-                margin-bottom: 10px;
-            }
+            
             .goods-card {
                 display: flex;
                 align-items: center;

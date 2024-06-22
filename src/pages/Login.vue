@@ -21,7 +21,8 @@
                 </el-form-item>
                 <!-- 忘记密码 -->
                 <el-form-item class="forget">
-                    <a href="javascript:;" class="forget-password">忘记密码?</a>
+                    <!-- <a href="javascript:;" class="forget-password">忘记密码?</a> -->
+                    <router-link to="/forgetpassword" class="forget-password">忘记密码?</router-link>
                 </el-form-item>
             </el-form>
             <!-- 按钮的样式可以直接通过添加类名设置样式 -->
@@ -72,11 +73,18 @@
                 console.log(result)
                 if(result.code == 200) {
                     console.log('登录成功')
+                    this.$message({
+                        type: 'success',
+                        message: '登录成功',
+                        duration: 1000
+                    })
                     // 将 token 存入本地
                     localStorage.setItem('token', result.data.token)
                     // 获取用户信息
                     this.$store.dispatch('getUserInfo')
                     this.$router.push('/home');
+                }else {
+                    this.$message.error(result.message)
                 }
             }
         }
